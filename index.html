@@ -1,0 +1,243 @@
+<html>
+
+<head>
+    <title>Phoenix</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- CSS FRAMEWORKS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css">
+    <!-- MAIN CSS -->
+    <link rel="stylesheet" href="css/main.css" type="text/css">
+</head>
+
+<body>
+    <!--               -->
+    <!-- HOPIN ZADANIE -->
+    <!--               -->
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12" id="output"></div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row" id="data"></div>
+        <div class="row">
+            <div class="col-sm-12 col-md-12 col-lg-6 col-xl-4">
+                <p class="post" id="actualTime"></p>
+                <p class="post" id="timeTargetConvert"></p>
+                <p class="post" id="limitConvert"></p>
+                <p class="post" id="timeReserveConvert"></p>
+            </div>
+        </div>
+        <script>
+            var data = [
+
+                {
+                    text: "Bratislava",
+                    time: "21:50",
+                    limit: "5"
+                },
+
+                {
+                    text: "Kosice",
+                    time: "18:20",
+                    limit: 10
+                },
+
+                {
+                    text: "Trnava",
+                    time: "21:00",
+                    limit: "12"
+                },
+
+                {
+                    text: "Trencin",
+                    time: "16:25",
+                    limit: 30
+                },
+
+                {
+                    text: "Martin",
+                    time: "16:25",
+                    limit: null
+                },
+
+                {
+                    text: "Kysuce",
+                    time: null,
+                    limit: 100
+                }
+            ];
+
+            // výpis poľa ojektov pomocou foreach
+            data.forEach(function(data) {
+
+                'use strict';
+
+                // podmienka pre nevykreslenie elementu UL ak je aspoň jedna hodnota rovná hodnote null
+                if ((data.time !== null) && (data.limit !== null)) {
+
+                    //  definovanie premenných
+                    var ul = document.createElement('ul'),
+                        text = document.createElement('li'),
+                        city = data.text,
+                        time = document.createElement('li'),
+                        limit = document.createElement('li');
+
+                    // vytvorenie ul elementu zoznamu v rámci rodičovského elementu data
+                    ul.className += "col-sm-12 col-md-12 col-lg-12 col-xl-6";
+                    document.getElementById('data').appendChild(ul);
+                    
+                    // vytvorenie li potomku v rámci ul pre hodnotu data.text z poľa, čo je názov mesta 
+                    ul.appendChild(text);
+                    text.innerHTML += data.text;
+                    text.className += "text ";
+                    text.className += city;
+
+                    // vytvorenie li potomku v rámci ul pre hodnotu data.time z poľa, čo je maximálny čas dojazdu
+                    ul.appendChild(time);
+                    time.innerHTML += data.time;
+                    time.className += "time";
+
+                    // vytvorenie li potomku v rámci ul pre hodnotu data.limit z poľa, čo je dlžka trvania trasy
+                    ul.appendChild(limit);
+                    limit.innerHTML += data.limit;
+                    limit.className += "limit";
+                }
+            });
+
+            // onClickClone element funkcia, neviem s ňou pohnúťa tým pádom neviem na ňu nalepiť ďalšiu funkcionalitu, ktorými by klonovaný element disponoval, v v reále by som sa vedel opýtať kolegu vedľa sediaceho a dal by mi nejaký tip aby som sa vedel pohnúť ďalej len v tejto situácií to nie je možné :-)
+            /*function onClickClone() {
+                var clickedElement = document.querySelectorAll("#data ul");
+
+                for (var i = 0; i < clickedElement.length; i++) {
+                    clickedElement[i].onclick = function() {
+                        document.getElementById("output").value = this.innerHTML;
+                    };
+                }
+            }*/
+
+            // aktuálny čas
+            function actualTime() {
+
+                'use strict';
+
+                var d = new Date(),
+                    Hours = d.getHours(),
+                    Minutes = d.getMinutes();
+
+                Minutes = Minutes < 10 ? '0' + Minutes : Minutes;
+
+                var actualTime = (Hours + ':' + Minutes);
+                return actualTime;
+            }
+            document.getElementById("actualTime").innerHTML = 'Aktuálny čas: ' + actualTime();
+            var actualTime = actualTime();
+
+            // aktuálny čas prevedený na minúty aby som vedel s ním pracovať ďalej
+            function actualTimeInMinutes() {
+
+                'use strict';
+
+                var str = actualTime,
+                    Hours = Number(str.slice(0, 2)),
+                    Minutes = Number(str.slice(3, 5)),
+                    actualTimeInMinutes = (Hours * 60) + (Minutes * 1);
+
+                return actualTimeInMinutes;
+            }
+            var actualTimeInMinutes = actualTimeInMinutes();
+
+            // čas maximálneho dojazdu - rozdelenie stringu na hodiny a minúty a ich pretypovanie na čísla a prenásobenie
+            function timeTarget() {
+
+                'use strict';
+
+                var str = '11:55', // vyfiltrovať cez DOM data.time hodnotu z klonovaného elementu
+                    Hours = Number(str.slice(0, 2)),
+                    Minutes = Number(str.slice(3, 5)),
+                    timeTarget = (Hours * 60) + (Minutes * 1);
+
+                return timeTarget;
+            }
+            var timeTarget = timeTarget();
+
+            // časová rezerva pre dojazd
+            function timeReserve() {
+
+                'use strict';
+
+                var limit = 100, // vyfiltrovať cez DOM data.limit hodnotu z klonovaného elementu
+                    timeReserve = (timeTarget - actualTimeInMinutes);
+
+                // pridať zelené pozadie (CSS triedu) k ul klonovaného elementu (v tomto prípade k ukážke lebo klonovaný element nemám a neviem k nemu nalepiť funkcionalitu)
+                if (timeReserve > limit) {
+                    var green = document.getElementById("timeReserveConvert");
+                    green.className += " hurry-up";
+                }
+
+                // pridať červené pozadie (CSS triedu) k ul klonovaného elementu (v tomto prípade k ukážke lebo klonovaný element nemám a neviem k nemu nalepiť funkcionalitu)
+                else if ((timeReserve < limit) && (timeReserve < 0)) {
+                    timeReserve = 0;
+                    var red = document.getElementById("timeReserveConvert");
+                    red.className += " next-passenger";
+                };
+                return timeReserve;
+            }
+            var timeReserve = timeReserve();
+
+            // prevod limit hodnoty na hodiny a minúty
+            function limitConvert() {
+
+                'use strict';
+
+                var limit = 100, // vyfiltrovať cez DOM data.limit hodnotu z klonovaného elementu
+                    Minutes = Number(limit % 60),
+                    Hours = (limit - Minutes) / 60;
+
+                Minutes = Minutes < 10 ? '0' + Minutes : Minutes;
+
+                var limitConvert = Hours + ':' + Minutes;
+                return limitConvert;
+            }
+            document.getElementById("limitConvert").innerHTML = 'Dlžka trasy: ' + limitConvert();
+            var limitConvert = limitConvert();
+
+            // prevod rezervného času na hodiny a minúty
+            function timeReserveConvert() {
+
+                'use strict';
+
+                var Minutes = Number(timeReserve % 60);
+                var Hours = (timeReserve - Minutes) / 60;
+
+                if (Minutes <= 0) {
+                    Minutes = 0
+                } else if (Hours <= 0) {
+                    Hours = 0
+                };
+
+                Minutes = Minutes < 10 ? '0' + Minutes : Minutes;
+
+                var timeReserveConvert = Hours + ':' + Minutes;
+                return timeReserveConvert;
+            }
+            document.getElementById("timeReserveConvert").innerHTML = 'Časová rezerva: ' + timeReserveConvert();
+            var timeReserveConvert = timeReserveConvert();
+
+            // prevod času dojazdu späť v prípade klonovaného elementu by som vytiahol len data.time hodnotu a funkcia by nebola potrebná
+            function timeTargetConvert() {
+
+                'use strict';
+
+                var timeTarget = '11:55'; // vyfiltrovať cez DOM data.time hodnotu z klonovaného elementu
+                return timeTarget;
+            }
+            document.getElementById("timeTargetConvert").innerHTML = 'Čas cieľa: ' + timeTargetConvert();
+            var timeTarget = timeTargetConvert();
+
+        </script>
+    </div>
+</body>
+
+</html>
